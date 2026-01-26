@@ -1,0 +1,25 @@
+<!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.yichangyiwai.dev-tools</id>
+    <name>dev-tools</name>
+    <vendor url="https://github.com/yichangyiwai">yichangyiwai</vendor>
+
+    <description><![CDATA[
+        开发者工具箱插件，包含：<br>
+        <ul>
+            <li><b>JSON 格式化工具</b> - 美化、压缩、语法校验、错误高亮</li>
+            <li><b>字节解码器</b> - 十六进制/二进制/十进制互转，位操作可视化</li>
+        </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.compose</depends>
+    <depends>com.intellij.java</depends>
+    <depends>com.intellij.modules.json</depends>
+
+    <resource-bundle>messages.MyMessageBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="dev-tools" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
+                    icon="AllIcons.Toolwindows.ToolWindowBuild" anchor="right"/>
+    </extensions>
+</idea-plugin>
