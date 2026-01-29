@@ -1,4 +1,4 @@
-# Dev Tools - IntelliJ IDEA 开发者工具插件
+# DevToolbox - IntelliJ IDEA 开发者工具箱插件
 
 [![JetBrains Plugin](https://img.shields.io/badge/JetBrains-Plugin-blue.svg)](https://plugins.jetbrains.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -40,19 +40,19 @@
 ### 从 JetBrains Marketplace 安装（推荐）
 
 1. 打开 IDEA → `File` → `Settings` → `Plugins`
-2. 搜索 "Dev Tools"
+2. 搜索 "DevToolbox"
 3. 点击 `Install` → 重启 IDEA
 
 ### 手动安装
 
-1. 从 [Releases](https://github.com/yichangyiwai/idea-dev-tools/releases) 下载最新版本的 `.zip` 文件
+1. 从 [Releases](https://github.com/yichangyiwai/devtoolbox/releases) 下载最新版本的 `.zip` 文件
 2. 打开 IDEA → `File` → `Settings` → `Plugins`
 3. 点击 ⚙️ → `Install Plugin from Disk...`
 4. 选择下载的 `.zip` 文件 → 重启 IDEA
 
 ## 📖 使用方法
 
-安装后，在 IDEA 右侧工具栏找到 **"Dev Tools"** 图标，点击打开工具窗口，包含三个 Tab：
+安装后，在 IDEA 右侧工具栏找到 **"DevToolbox"** 图标，点击打开工具窗口，包含三个 Tab：
 
 - **JSON 格式化** - JSON 美化、压缩、校验
 - **字节解码器** - 进制转换、位可视化
@@ -66,7 +66,7 @@
 ./gradlew clean buildPlugin
 ```
 
-构建完成后，插件文件位于：`build/distributions/idea-dev-tools-1.0-SNAPSHOT.zip`
+构建完成后，插件文件位于：`build/distributions/devtoolbox-1.0-SNAPSHOT.zip`
 
 ### 开发调试
 
@@ -120,7 +120,7 @@ src/main/kotlin/com/yichangyiwai/devtools/
 ## 📧 联系方式
 
 - GitHub: [@yichangyiwai](https://github.com/yichangyiwai)
-- Issues: [GitHub Issues](https://github.com/yichangyiwai/idea-dev-tools/issues)
+- Issues: [GitHub Issues](https://github.com/yichangyiwai/devtoolbox/issues)
 
 ## ⭐ Star History
 

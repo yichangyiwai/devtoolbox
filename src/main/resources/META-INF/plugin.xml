@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.yichangyiwai.idea-dev-tools</id>
-    <name>Dev Tools</name>
+    <id>com.yichangyiwai.devtoolbox</id>
+    <name>DevToolbox</name>
     <vendor url="https://github.com/yichangyiwai">yichangyiwai</vendor>
 
     <description><![CDATA[
@@ -23,7 +23,7 @@
     <resource-bundle>messages.MyMessageBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Dev Tools" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
+        <toolWindow id="DevTools" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
                     icon="AllIcons.Toolwindows.ToolWindowBuild" anchor="right"/>
     </extensions>
 </idea-plugin>
