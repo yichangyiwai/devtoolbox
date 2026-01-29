@@ -41,6 +41,12 @@ intellijPlatform {
         """.trimIndent()
     }
 
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
+
     buildSearchableOptions = false
 }
 
