@@ -23,7 +23,7 @@
     <resource-bundle>messages.MyMessageBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="DevTools" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
+        <toolWindow id="DevToolbox" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
                     icon="AllIcons.Toolwindows.ToolWindowBuild" anchor="right"/>
     </extensions>
 </idea-plugin>
