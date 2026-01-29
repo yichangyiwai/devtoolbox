@@ -43,7 +43,7 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.3")
         }
     }
 
