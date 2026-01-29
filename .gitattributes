@@ -1,27 +1,20 @@
-# 行尾规范化
+# Auto detect text files and perform LF normalization
 * text=auto
 
-# 源代码
-*.kt text
-*.java text
-*.gradle text
-*.kts text
-*.xml text
+# Source code
+*.kt text diff=kotlin
+*.java text diff=java
+*.gradle text diff=java
 *.properties text
-*.yml text
-*.yaml text
+*.xml text
 *.json text
-
-# 文档
 *.md text
-*.txt text
 
-# 脚本
+# Scripts
 *.sh text eol=lf
 *.bat text eol=crlf
-gradlew text eol=lf
 
-# 二进制文件
+# Binary files
 *.jar binary
 *.zip binary
 *.png binary
@@ -30,4 +23,5 @@ gradlew text eol=lf
 *.gif binary
 *.ico binary
 *.ttf binary
-*.otf binary
+*.woff binary
+*.woff2 binary

@@ -1,152 +1,127 @@
 # Dev Tools - IntelliJ IDEA 开发者工具插件
 
-<div align="center">
-
+[![JetBrains Plugin](https://img.shields.io/badge/JetBrains-Plugin-blue.svg)](https://plugins.jetbrains.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ%20IDEA-2025.2+-orange.svg)](https://www.jetbrains.com/idea/)
+[![IDEA Version](https://img.shields.io/badge/IDEA-2025.2%2B-orange.svg)](https://www.jetbrains.com/idea/)
+[![JDK Version](https://img.shields.io/badge/JDK-21%2B-green.svg)](https://openjdk.org/)
 
-一个实用的 IntelliJ IDEA 插件，提供常用的开发辅助工具。
-
-[功能特性](#功能特性) • [安装](#构建与安装) • [使用](#使用方法) • [贡献](#贡献) • [许可证](#许可证)
-
-</div>
-
----
+一个功能强大的 IntelliJ IDEA 插件，为日常开发提供实用工具集。
 
 ## ✨ 功能特性
 
-### 1️⃣ JSON 格式化工具
+### 1. JSON 格式化工具
 
-- ✅ **美化** - 格式化 JSON，支持 2/4 空格缩进配置
-- ✅ **压缩** - 将 JSON 压缩为单行输出
-- ✅ **校验** - 语法校验 + 错误提示
-- ✅ **复制** - 一键复制结果到剪贴板
+- **美化** - 格式化 JSON，支持 2/4 空格缩进配置
+- **压缩** - 将 JSON 压缩为单行输出
+- **校验** - 实时语法校验 + 错误提示
+- **复制** - 一键复制结果到剪贴板
 
-### 2️⃣ 字节解码器
+### 2. 字节解码器
 
-- ✅ **进制转换** - 十六进制 ↔ 二进制 ↔ 十进制 互转
-- ✅ **位可视化** - 每个 bit 可视化显示，按字节分组
-- ✅ 支持多种输入格式：`0xFF`、`FF`、`0b11111111`、`255`
+- **进制转换** - 十六进制 ↔ 二进制 ↔ 十进制 互转
+- **位可视化** - 每个 bit 可视化显示，按字节分组
+- 支持多种输入格式：`0xFF`、`FF`、`0b11111111`、`255`
 
-### 3️⃣ 字节解析器
+### 3. 字节解析器
 
-- ✅ **十六进制输入** - 支持多种格式：`48 65 6C 6C 6F`、`0x48656C6C6F`
-- ✅ **字节预览** - 显示行号 + 偏移量 + 十六进制 + ASCII 对照表
-- ✅ **自定义解析规则** - 按偏移量和长度解析数据
-- ✅ **多种数据类型** - Hex、String、Int8/16/32/64、UInt8/16/32、Float、Double
-- ✅ **字节序支持** - 大端 (Big Endian) / 小端 (Little Endian)
-- ✅ **滚动预览** - 限制 10 行显示，长数据可滚动查看
-
----
+- **十六进制输入** - 支持多种格式：`48 65 6C 6C 6F`、`0x48656C6C6F`
+- **字节预览** - 显示偏移量 + 十六进制 + ASCII 对照表（最多显示 10 行，支持滚动）
+- **自定义解析规则** - 按偏移量和长度解析数据
+- **多种数据类型** - Hex、String、Int8/16/32/64、UInt8/16/32、Float、Double
+- **字节序支持** - 大端序 (Big Endian) / 小端序 (Little Endian)
 
 ## 📋 环境要求
 
-- IntelliJ IDEA 2025.2+
-- JDK 21+
+- **IntelliJ IDEA** 2025.2+
+- **JDK** 21+
 
----
+## 🚀 安装
 
-## 📁 项目结构
+### 从 JetBrains Marketplace 安装（推荐）
+
+1. 打开 IDEA → `File` → `Settings` → `Plugins`
+2. 搜索 "Dev Tools"
+3. 点击 `Install` → 重启 IDEA
+
+### 手动安装
+
+1. 从 [Releases](https://github.com/yichangyiwai/idea-dev-tools/releases) 下载最新版本的 `.zip` 文件
+2. 打开 IDEA → `File` → `Settings` → `Plugins`
+3. 点击 ⚙️ → `Install Plugin from Disk...`
+4. 选择下载的 `.zip` 文件 → 重启 IDEA
+
+## 📖 使用方法
+
+安装后，在 IDEA 右侧工具栏找到 **"Dev Tools"** 图标，点击打开工具窗口，包含三个 Tab：
+
+- **JSON 格式化** - JSON 美化、压缩、校验
+- **字节解码器** - 进制转换、位可视化
+- **字节解析器** - 按规则解析字节数据
+
+## 🛠️ 开发
+
+### 构建插件
+
+```bash
+./gradlew clean buildPlugin
+```
+
+构建完成后，插件文件位于：`build/distributions/idea-dev-tools-1.0-SNAPSHOT.zip`
+
+### 开发调试
+
+```bash
+./gradlew runIde
+```
+
+### 运行测试
+
+```bash
+./gradlew test
+```
+
+## 📦 项目结构
 
 ```
 src/main/kotlin/com/yichangyiwai/devtools/
 ├── DevToolsWindowFactory.kt      # 主窗口工厂
+├── MyMessageBundle.kt            # 国际化资源
 └── ui/
     ├── JsonFormatterPanel.kt     # JSON 格式化工具
     ├── ByteDecoderPanel.kt       # 字节解码器（进制转换）
     └── ByteParserPanel.kt        # 字节解析器
 ```
 
----
+## 🔧 技术栈
 
-## 🚀 构建与安装
-
-### 方式一：从源码构建
-
-```bash
-# 克隆项目
-git clone https://github.com/yichangyiwai/idea-dev-tools.git
-cd idea-dev-tools
-
-# 构建插件
-./gradlew clean buildPlugin
-```
-
-构建完成后，插件文件位于：`build/distributions/idea-dev-tools-1.0-SNAPSHOT.zip`
-
-### 方式二：开发调试
-
-```bash
-./gradlew runIde
-```
-
-### 安装到 IDEA
-
-1. 打开 IDEA → `File` → `Settings` (或 `Ctrl+Alt+S`)
-2. 左侧选择 `Plugins`
-3. 点击右上角 ⚙️ 齿轮图标 → `Install Plugin from Disk...`
-4. 选择 `build/distributions/idea-dev-tools-1.0-SNAPSHOT.zip`
-5. 点击 `OK` → 重启 IDEA
-
----
-
-## 📖 使用方法
-
-安装后，在 IDEA 右侧工具栏找到 **"idea-dev-tools"**，包含三个 Tab：
-
-| 功能 | 说明 |
-|------|------|
-| **JSON 格式化** | JSON 美化、压缩、语法校验 |
-| **字节解码器** | 进制转换、位操作可视化 |
-| **字节解析器** | 按规则解析字节数据 |
-
----
-
-## 🛠️ 技术栈
-
-- **语言**: Kotlin
-- **UI 框架**: Jetpack Compose for Desktop (Jewel UI)
-- **平台**: IntelliJ Platform SDK 2025.2
-- **构建工具**: Gradle 8.x
-- **JDK**: 21
-
----
+- **Kotlin** - 主要编程语言
+- **Jetpack Compose for Desktop (Jewel UI)** - 现代 UI 框架
+- **IntelliJ Platform SDK** - 插件开发框架
+- **Gradle** - 构建工具
 
 ## 🤝 贡献
 
-欢迎贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解详情。
+欢迎贡献！请查看 [贡献指南](CONTRIBUTING.md)。
 
-### 贡献者
-
-感谢所有贡献者的付出！
-
----
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
 
 ## 📝 更新日志
 
-查看 [CHANGELOG.md](CHANGELOG.md) 了解版本更新历史。
-
----
+查看 [CHANGELOG.md](CHANGELOG.md) 了解版本历史。
 
 ## 📄 许可证
 
-本项目采用 [MIT License](LICENSE) 开源协议。
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
----
+## 📧 联系方式
 
-## 💬 联系方式
+- GitHub: [@yichangyiwai](https://github.com/yichangyiwai)
+- Issues: [GitHub Issues](https://github.com/yichangyiwai/idea-dev-tools/issues)
 
-- **Issues**: [GitHub Issues](https://github.com/yichangyiwai/idea-dev-tools/issues)
-- **作者**: yichangyiwai
+## ⭐ Star History
 
----
-
-<div align="center">
-
-**如果觉得这个项目对你有帮助，请给个 ⭐ Star 吧！**
-
-Made with ❤️ by yichangyiwai
-
-</div>
+如果这个项目对你有帮助，请给它一个 ⭐️！

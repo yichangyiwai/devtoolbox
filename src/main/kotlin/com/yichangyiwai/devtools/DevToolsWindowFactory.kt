@@ -12,15 +12,15 @@ class DevToolsWindowFactory : ToolWindowFactory {
     override fun shouldBeAvailable(project: Project) = true
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        toolWindow.addComposeTab("JSON 格式化", focusOnClickInside = true) {
+        toolWindow.addComposeTab("JSON 格式化") {
             JsonFormatterPanel()
         }
 
-        toolWindow.addComposeTab("字节解码器", focusOnClickInside = true) {
+        toolWindow.addComposeTab("字节解码器") {
             ByteDecoderPanel()
         }
 
-        toolWindow.addComposeTab("字节解析器", focusOnClickInside = true) {
+        toolWindow.addComposeTab("字节解析器") {
             ByteParserPanel()
         }
     }
