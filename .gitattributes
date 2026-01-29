@@ -1,0 +1,33 @@
+# 行尾规范化
+* text=auto
+
+# 源代码
+*.kt text
+*.java text
+*.gradle text
+*.kts text
+*.xml text
+*.properties text
+*.yml text
+*.yaml text
+*.json text
+
+# 文档
+*.md text
+*.txt text
+
+# 脚本
+*.sh text eol=lf
+*.bat text eol=crlf
+gradlew text eol=lf
+
+# 二进制文件
+*.jar binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
