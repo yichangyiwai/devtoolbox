@@ -36,15 +36,24 @@ fun ByteDecoderPanel() {
         ) {
             Text("输入类型:", fontSize = 12.sp)
             InputType.entries.forEach { type ->
-                OutlinedButton(
-                    onClick = {
-                        inputType = type
-                        inputText = ""
-                        conversionResult = null
-                        errorMessage = null
+                val isSelected = inputType == type
+                if (isSelected) {
+                    DefaultButton(
+                        onClick = { }
+                    ) {
+                        Text(type.displayName)
                     }
-                ) {
-                    Text(type.displayName)
+                } else {
+                    OutlinedButton(
+                        onClick = {
+                            inputType = type
+                            inputText = ""
+                            conversionResult = null
+                            errorMessage = null
+                        }
+                    ) {
+                        Text(type.displayName)
+                    }
                 }
             }
 
