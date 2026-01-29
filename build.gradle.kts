@@ -33,13 +33,15 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "252.25557"
+            sinceBuild = "252"
         }
 
         changeNotes = """
-            Initial version
+            Initial version - v1.0.0
         """.trimIndent()
     }
+
+    buildSearchableOptions = false
 }
 
 tasks {

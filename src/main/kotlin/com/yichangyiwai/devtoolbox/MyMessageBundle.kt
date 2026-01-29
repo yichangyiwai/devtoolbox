@@ -1,4 +1,4 @@
-package com.yichangyiwai.devtools
+package com.yichangyiwai.devtoolbox
 
 import com.intellij.DynamicBundle
 import org.jetbrains.annotations.Nls

@@ -19,11 +19,12 @@
 
     <depends>com.intellij.java</depends>
     <depends>com.intellij.modules.json</depends>
+    <depends>com.intellij.modules.compose</depends>
 
     <resource-bundle>messages.MyMessageBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="DevToolbox" factoryClass="com.yichangyiwai.devtools.DevToolsWindowFactory"
+        <toolWindow id="DevToolbox" factoryClass="com.yichangyiwai.devtoolbox.DevToolsWindowFactory"
                     icon="AllIcons.Toolwindows.ToolWindowBuild" anchor="right"/>
     </extensions>
 </idea-plugin>

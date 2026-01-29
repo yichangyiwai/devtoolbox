@@ -1,8 +1,8 @@
-package com.yichangyiwai.devtools
+package com.yichangyiwai.devtoolbox
 
-import com.yichangyiwai.devtools.ui.ByteDecoderPanel
-import com.yichangyiwai.devtools.ui.ByteParserPanel
-import com.yichangyiwai.devtools.ui.JsonFormatterPanel
+import com.yichangyiwai.devtoolbox.ui.ByteDecoderPanel
+import com.yichangyiwai.devtoolbox.ui.ByteParserPanel
+import com.yichangyiwai.devtoolbox.ui.JsonFormatterPanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory

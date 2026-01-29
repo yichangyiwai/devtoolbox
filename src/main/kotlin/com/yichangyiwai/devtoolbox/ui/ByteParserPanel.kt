@@ -1,4 +1,4 @@
-package com.yichangyiwai.devtools.ui
+package com.yichangyiwai.devtoolbox.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
