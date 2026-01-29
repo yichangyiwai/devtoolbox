@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-01-29
+
+### Fixed
+
+- **字节解码器**
+  - 修复输入类型（十六进制/二进制/十进制）选中后点击输入框不显示选中状态的问题
+
+### Added
+
+- **JSON 格式化工具**
+  - 新增树形视图模式，支持大括号/方括号折叠展开
+  - 折叠时显示项目数量摘要
+  - 语法高亮：键名紫色、字符串绿色、数字蓝色、布尔值/null橙色
+  - 支持树形/文本视图切换
+
 ## [1.0.0] - 2026-01-29
 
 ### Added
