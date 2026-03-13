@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-03-13
+
+### Added
+
+- **TCP 发送面板**
+  - 支持连接目标主机与端口并发送 TCP 数据
+  - 支持完整十六进制报文直发
+  - 支持按偏移、长度、类型和字节序组装发送报文
+  - 支持发送前预览最终完整报文
+
+- **TCP 接收解析面板**
+  - 支持监听指定主机与端口并记录接收消息
+  - 支持在接收端向已连接客户端发送 Ping 保活消息
+  - 支持对当前选中接收记录应用字节解析规则并实时展示结果
+
+- **共享能力**
+  - 新增共享十六进制编解码工具、字节解析服务和通用 UI 组件
+
+### Changed
+
+- **字节解析能力**
+  - 将字节解析规则与十六进制解析逻辑抽取为公共服务，供字节解析器与 TCP 面板复用
+  - 解析规则结果改为在规则行右侧展示，便于对照查看
+
+- **TCP 接收交互**
+  - 接收记录与解析规则改为上下布局，接收记录区域固定高度
+  - 移除重复的原始十六进制详情框，直接复用接收记录中的完整 Hex 展示
+  - 规则支持全部删除，空状态提供居中的“添加规则”入口
+  - 统一空态与规则列表底部“添加规则”按钮宽度与布局
+
 ## [1.0.1] - 2026-01-29
 
 ### Fixed
