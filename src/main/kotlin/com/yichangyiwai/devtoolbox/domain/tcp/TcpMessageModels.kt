@@ -8,6 +8,11 @@ enum class TcpSendMode(val displayName: String) {
     RULES("规则组装")
 }
 
+enum class TcpReceiveMode(val displayName: String) {
+    SERVER("服务端监听"),
+    CLIENT("客户端连接")
+}
+
 enum class ValueInputMode(val displayName: String) {
     NUMBER("数值"),
     HEX("Hex")

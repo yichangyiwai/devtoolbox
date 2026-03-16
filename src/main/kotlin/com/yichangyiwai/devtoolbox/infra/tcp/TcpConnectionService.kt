@@ -40,6 +40,78 @@ class TcpClientService {
     fun isConnected(): Boolean = socket?.isConnected == true && socket?.isClosed == false
 }
 
+class TcpReceiverClientService {
+    @Volatile
+    private var running = false
+    private var socket: Socket? = null
+    private var output: BufferedOutputStream? = null
+
+    @Synchronized
+    fun start(
+        host: String,
+        port: Int,
+        onMessage: (TcpReceivedMessage) -> Unit,
+        onError: (String) -> Unit,
+        onDisconnected: () -> Unit,
+    ) {
+        if (running) throw IllegalStateException("连接已启动")
+        val connected = Socket(host, port)
+        socket = connected
+        output = BufferedOutputStream(connected.getOutputStream())
+        running = true
+        thread(isDaemon = true, name = "devtoolbox-tcp-receiver-client") {
+            try {
+                val input = BufferedInputStream(connected.getInputStream())
+                val buffer = ByteArray(4096)
+                while (running && !connected.isClosed) {
+                    val size = input.read(buffer)
+                    if (size <= 0) break
+                    onMessage(
+                        TcpReceivedMessage(
+                            timestamp = tcpTimestamp(),
+                            remoteAddress = "${connected.inetAddress.hostAddress}:${connected.port}",
+                            data = buffer.copyOf(size)
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                if (running) onError(e.message ?: "TCP 接收失败")
+            } finally {
+                val shouldNotifyDisconnected = running
+                running = false
+                closeResources()
+                if (shouldNotifyDisconnected) {
+                    onDisconnected()
+                }
+            }
+        }
+    }
+
+    @Synchronized
+    fun send(data: ByteArray) {
+        if (!running) throw IllegalStateException("连接未建立")
+        val currentOutput = output ?: throw IllegalStateException("连接未建立")
+        currentOutput.write(data)
+        currentOutput.flush()
+    }
+
+    @Synchronized
+    fun stop() {
+        running = false
+        closeResources()
+    }
+
+    fun isRunning(): Boolean = running && socket?.isClosed == false
+
+    @Synchronized
+    private fun closeResources() {
+        output?.close()
+        socket?.close()
+        output = null
+        socket = null
+    }
+}
+
 class TcpServerService {
     private var serverSocket: ServerSocket? = null
     private var running = false
@@ -65,7 +137,7 @@ class TcpServerService {
                                     if (size <= 0) break
                                     onMessage(
                                         TcpReceivedMessage(
-                                            timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")),
+                                            timestamp = tcpTimestamp(),
                                             remoteAddress = accepted.inetAddress.hostAddress,
                                             data = buffer.copyOf(size)
                                         )
@@ -125,3 +197,5 @@ class TcpServerService {
 
     fun isRunning(): Boolean = running
 }
+
+private fun tcpTimestamp(): String = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))

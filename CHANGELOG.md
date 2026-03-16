@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2026-03-16
+
+### Added
+
+- **TCP 接收解析面板**
+  - 新增“服务端监听 / 客户端连接”双模式支持
+  - 客户端连接模式支持主动连接目标服务端并持续接收消息
+
+### Changed
+
+- **TCP 接收交互**
+  - Ping 发送能力适配双模式，可向已连接客户端或目标服务端发送
+  - 主机/端口输入项、状态提示与启停按钮文案会随接收模式同步切换
+
 ## [1.2.0] - 2026-03-13
 
 ### Added

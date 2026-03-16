@@ -20,12 +20,15 @@ import com.yichangyiwai.devtoolbox.domain.byteparser.ByteParseService
 import com.yichangyiwai.devtoolbox.domain.byteparser.ParseResult
 import com.yichangyiwai.devtoolbox.domain.byteparser.ParseRule
 import com.yichangyiwai.devtoolbox.domain.hex.HexCodec
+import com.yichangyiwai.devtoolbox.domain.tcp.TcpReceiveMode
 import com.yichangyiwai.devtoolbox.domain.tcp.TcpReceivedMessage
+import com.yichangyiwai.devtoolbox.infra.tcp.TcpReceiverClientService
 import com.yichangyiwai.devtoolbox.infra.tcp.TcpServerService
 import com.yichangyiwai.devtoolbox.ui.components.ErrorMessage
 import com.yichangyiwai.devtoolbox.ui.components.ParseRuleList
 import com.yichangyiwai.devtoolbox.ui.components.SuccessMessage
 import org.jetbrains.jewel.ui.component.DefaultButton
+import org.jetbrains.jewel.ui.component.OutlinedButton
 import org.jetbrains.jewel.ui.component.Text
 import java.nio.ByteOrder
 
@@ -34,9 +37,13 @@ private val addRuleButtonWidth = 140.dp
 @Composable
 fun TcpReceiverPanel() {
     val serverService = remember { TcpServerService() }
-    var host by remember { mutableStateOf("0.0.0.0") }
-    var port by remember { mutableStateOf("9000") }
-    var listening by remember { mutableStateOf(false) }
+    val clientService = remember { TcpReceiverClientService() }
+    var receiveMode by remember { mutableStateOf(TcpReceiveMode.SERVER) }
+    var serverHost by remember { mutableStateOf("0.0.0.0") }
+    var serverPort by remember { mutableStateOf("9000") }
+    var clientHost by remember { mutableStateOf("127.0.0.1") }
+    var clientPort by remember { mutableStateOf("9000") }
+    var active by remember { mutableStateOf(false) }
     var pingHexInput by remember { mutableStateOf("50 49 4E 47") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
@@ -47,7 +54,10 @@ fun TcpReceiverPanel() {
     var byteOrder by remember { mutableStateOf(ByteOrder.BIG_ENDIAN) }
 
     DisposableEffect(Unit) {
-        onDispose { serverService.stop() }
+        onDispose {
+            serverService.stop()
+            clientService.stop()
+        }
     }
 
     fun refreshResults() {
@@ -59,64 +69,138 @@ fun TcpReceiverPanel() {
         }
     }
 
+    fun handleIncomingMessage(message: TcpReceivedMessage) {
+        messages = listOf(message) + messages
+        selectedIndex = 0
+        parseResults = ByteParseService.parseAll(message.data, parseRules, byteOrder)
+        successMessage = "收到 ${message.data.size} 字节，来自 ${message.remoteAddress}"
+        errorMessage = null
+    }
+
+    fun stopMode(mode: TcpReceiveMode, statusMessage: String? = null) {
+        when (mode) {
+            TcpReceiveMode.SERVER -> serverService.stop()
+            TcpReceiveMode.CLIENT -> clientService.stop()
+        }
+        active = false
+        if (statusMessage != null) {
+            successMessage = statusMessage
+            errorMessage = null
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        ReceiveModeSelector(receiveMode = receiveMode, onChange = { mode ->
+            if (mode != receiveMode) {
+                if (active) {
+                    stopMode(receiveMode)
+                }
+                receiveMode = mode
+                errorMessage = null
+                successMessage = "已切换为${mode.displayName}"
+            }
+        })
+
         TcpReceiverBar(
-            host = host,
-            port = port,
-            listening = listening,
+            receiveMode = receiveMode,
+            host = if (receiveMode == TcpReceiveMode.SERVER) serverHost else clientHost,
+            port = if (receiveMode == TcpReceiveMode.SERVER) serverPort else clientPort,
+            active = active,
             pingHexInput = pingHexInput,
-            onHostChange = { host = it },
-            onPortChange = { port = it },
+            onHostChange = {
+                if (receiveMode == TcpReceiveMode.SERVER) {
+                    serverHost = it
+                } else {
+                    clientHost = it
+                }
+            },
+            onPortChange = {
+                if (receiveMode == TcpReceiveMode.SERVER) {
+                    serverPort = it
+                } else {
+                    clientPort = it
+                }
+            },
             onPingHexChange = { pingHexInput = it },
             onStart = {
-                val validatedPort = port.toIntOrNull()
-                if (host.isBlank() || validatedPort == null || validatedPort !in 1..65535) {
-                    errorMessage = "请输入合法的监听主机和端口"
+                val currentHost = if (receiveMode == TcpReceiveMode.SERVER) serverHost else clientHost
+                val currentPort = if (receiveMode == TcpReceiveMode.SERVER) serverPort else clientPort
+                val validatedPort = currentPort.toIntOrNull()
+                if (currentHost.isBlank() || validatedPort == null || validatedPort !in 1..65535) {
+                    errorMessage = if (receiveMode == TcpReceiveMode.SERVER) {
+                        "请输入合法的监听主机和端口"
+                    } else {
+                        "请输入合法的目标服务端主机和端口"
+                    }
                     successMessage = null
                 } else {
                     try {
-                        serverService.start(
-                            host = host,
-                            port = validatedPort,
-                            onMessage = { message ->
-                                messages = listOf(message) + messages
-                                selectedIndex = 0
-                                parseResults = ByteParseService.parseAll(message.data, parseRules, byteOrder)
-                                successMessage = "收到 ${message.data.size} 字节，来自 ${message.remoteAddress}"
-                                errorMessage = null
-                            },
-                            onError = {
-                                errorMessage = it
-                                successMessage = null
-                                listening = false
-                            }
-                        )
-                        listening = true
+                        when (receiveMode) {
+                            TcpReceiveMode.SERVER -> serverService.start(
+                                host = currentHost,
+                                port = validatedPort,
+                                onMessage = { message -> handleIncomingMessage(message) },
+                                onError = {
+                                    errorMessage = it
+                                    successMessage = null
+                                    active = false
+                                }
+                            )
+
+                            TcpReceiveMode.CLIENT -> clientService.start(
+                                host = currentHost,
+                                port = validatedPort,
+                                onMessage = { message -> handleIncomingMessage(message) },
+                                onError = {
+                                    errorMessage = it
+                                    successMessage = null
+                                    active = false
+                                },
+                                onDisconnected = {
+                                    active = false
+                                    if (errorMessage == null) {
+                                        successMessage = "与服务端连接已断开"
+                                    }
+                                }
+                            )
+                        }
+                        active = true
                         errorMessage = null
-                        successMessage = "开始监听 $host:$validatedPort"
+                        successMessage = if (receiveMode == TcpReceiveMode.SERVER) {
+                            "开始监听 $currentHost:$validatedPort"
+                        } else {
+                            "已连接到 $currentHost:$validatedPort"
+                        }
                     } catch (e: Exception) {
-                        listening = false
-                        errorMessage = e.message ?: "监听失败"
+                        active = false
+                        errorMessage = e.message ?: if (receiveMode == TcpReceiveMode.SERVER) "监听失败" else "连接失败"
                         successMessage = null
                     }
                 }
             },
             onStop = {
-                serverService.stop()
-                listening = false
-                successMessage = "已停止监听"
-                errorMessage = null
+                stopMode(
+                    mode = receiveMode,
+                    statusMessage = if (receiveMode == TcpReceiveMode.SERVER) "已停止监听" else "已断开与服务端的连接"
+                )
             },
             onPing = {
                 val pingResult = HexCodec.parseHexString(pingHexInput)
                 if (pingResult.isSuccess) {
                     try {
                         val pingBytes = pingResult.getOrThrow()
-                        serverService.sendToClients(pingBytes)
-                        successMessage = "Ping 发送成功，共 ${pingBytes.size} 字节"
+                        when (receiveMode) {
+                            TcpReceiveMode.SERVER -> serverService.sendToClients(pingBytes)
+                            TcpReceiveMode.CLIENT -> clientService.send(pingBytes)
+                        }
+                        successMessage = if (receiveMode == TcpReceiveMode.SERVER) {
+                            "Ping 已发送到已连接客户端，共 ${pingBytes.size} 字节"
+                        } else {
+                            "Ping 已发送到目标服务端，共 ${pingBytes.size} 字节"
+                        }
                         errorMessage = null
                     } catch (e: Exception) {
                         errorMessage = e.message ?: "Ping 发送失败"
@@ -226,10 +310,25 @@ fun TcpReceiverPanel() {
 }
 
 @Composable
+private fun ReceiveModeSelector(receiveMode: TcpReceiveMode, onChange: (TcpReceiveMode) -> Unit) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text("接收模式", fontSize = 12.sp)
+        TcpReceiveMode.entries.forEach { mode ->
+            if (receiveMode == mode) {
+                DefaultButton(onClick = {}) { Text(mode.displayName) }
+            } else {
+                OutlinedButton(onClick = { onChange(mode) }) { Text(mode.displayName) }
+            }
+        }
+    }
+}
+
+@Composable
 private fun TcpReceiverBar(
+    receiveMode: TcpReceiveMode,
     host: String,
     port: String,
-    listening: Boolean,
+    active: Boolean,
     pingHexInput: String,
     onHostChange: (String) -> Unit,
     onPortChange: (String) -> Unit,
@@ -238,20 +337,31 @@ private fun TcpReceiverBar(
     onStop: () -> Unit,
     onPing: () -> Unit,
 ) {
+    val hostLabel = if (receiveMode == TcpReceiveMode.SERVER) "监听主机" else "目标主机"
+    val portLabel = if (receiveMode == TcpReceiveMode.SERVER) "监听端口" else "目标端口"
+    val primaryButtonText = when (receiveMode) {
+        TcpReceiveMode.SERVER -> if (active) "停止监听" else "开始监听"
+        TcpReceiveMode.CLIENT -> if (active) "断开" else "连接"
+    }
+    val statusText = when (receiveMode) {
+        TcpReceiveMode.SERVER -> if (active) "状态: 监听中" else "状态: 未监听"
+        TcpReceiveMode.CLIENT -> if (active) "状态: 已连接" else "状态: 未连接"
+    }
+
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("监听主机", fontSize = 12.sp)
+        Text(hostLabel, fontSize = 12.sp)
         ReceiverInlineField(value = host, onValueChange = onHostChange, modifier = Modifier.width(150.dp))
-        Text("端口", fontSize = 12.sp)
+        Text(portLabel, fontSize = 12.sp)
         ReceiverInlineField(value = port, onValueChange = onPortChange, modifier = Modifier.width(90.dp))
-        if (listening) {
-            DefaultButton(onClick = onStop) { Text("停止监听") }
+        if (active) {
+            DefaultButton(onClick = onStop) { Text(primaryButtonText) }
         } else {
-            DefaultButton(onClick = onStart) { Text("开始监听") }
+            DefaultButton(onClick = onStart) { Text(primaryButtonText) }
         }
         Text("Ping", fontSize = 12.sp)
         ReceiverInlineField(value = pingHexInput, onValueChange = onPingHexChange, modifier = Modifier.width(160.dp))
         DefaultButton(onClick = onPing) { Text("Ping") }
-        Text(if (listening) "状态: 监听中" else "状态: 未监听", fontSize = 11.sp, color = if (listening) Color(0xFF6A8759) else Color.Gray)
+        Text(statusText, fontSize = 11.sp, color = if (active) Color(0xFF6A8759) else Color.Gray)
     }
 }
 
