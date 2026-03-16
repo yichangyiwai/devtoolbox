@@ -8,6 +8,75 @@ plugins {
 group = "com.yichangyiwai"
 version = "1.2.6"
 
+fun String.escapeHtml(): String =
+    replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+
+fun formatChangelogInline(text: String): String =
+    Regex("\\*\\*(.+?)\\*\\*").replace(text.escapeHtml()) { matchResult ->
+        "<strong>${matchResult.groupValues[1]}</strong>"
+    }
+
+fun buildPluginChangeNotes(changelogFile: java.io.File): String {
+    val lines = changelogFile.readLines()
+    val releaseHeaderIndexes = lines.withIndex()
+        .filter { (_, line) -> line.startsWith("## [") && !line.startsWith("## [Unreleased]") }
+        .map { it.index }
+
+    return releaseHeaderIndexes.mapIndexed { index, start ->
+        val end = releaseHeaderIndexes.getOrNull(index + 1) ?: lines.size
+        val sectionLines = lines.subList(start, end)
+        val header = sectionLines.first()
+        val versionLabel = header.removePrefix("## [").substringBefore("]")
+        val versionDate = header.substringAfter("] - ", "").takeIf { it.isNotBlank() }
+
+        buildString {
+            append("<h3>v")
+            append(versionLabel.escapeHtml())
+            if (versionDate != null) {
+                append(" - ")
+                append(versionDate.escapeHtml())
+            }
+            appendLine("</h3>")
+
+            var inList = false
+
+            fun closeList() {
+                if (inList) {
+                    appendLine("</ul>")
+                    inList = false
+                }
+            }
+
+            sectionLines.drop(1).forEach { rawLine ->
+                when {
+                    rawLine.isBlank() -> closeList()
+                    rawLine.startsWith("### ") -> {
+                        closeList()
+                        appendLine("<h4>${formatChangelogInline(rawLine.removePrefix("### "))}</h4>")
+                    }
+                    rawLine.startsWith("- ") || rawLine.startsWith("  - ") -> {
+                        if (!inList) {
+                            appendLine("<ul>")
+                            inList = true
+                        }
+
+                        val bulletPrefix = if (rawLine.startsWith("  - ")) "— " else ""
+                        appendLine("<li>${bulletPrefix}${formatChangelogInline(rawLine.substringAfter("- ").trim())}</li>")
+                    }
+                    else -> {
+                        closeList()
+                        appendLine("<p>${formatChangelogInline(rawLine.trim())}</p>")
+                    }
+                }
+            }
+
+            closeList()
+        }.trim()
+    }.joinToString("\n")
+}
+
 repositories {
     mavenCentral()
     intellijPlatform {
@@ -36,14 +105,7 @@ intellijPlatform {
             sinceBuild = "252"
         }
 
-        changeNotes = """
-            <h3>v1.2.6</h3>
-            <ul>
-                <li>工具窗口新增独立窗口放大查看入口，并统一调整部分工具页签命名</li>
-                <li>JSON 格式化与进制解码器补充成功/错误状态反馈，并优化输入光标显示</li>
-                <li>TCP 报文发送与解析规则编辑体验优化，新增规则时可自动衔接偏移</li>
-            </ul>
-        """.trimIndent()
+        changeNotes = buildPluginChangeNotes(file("CHANGELOG.md"))
     }
 
     pluginVerification {
