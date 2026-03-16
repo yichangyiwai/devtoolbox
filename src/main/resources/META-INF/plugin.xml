@@ -10,11 +10,11 @@
         <b>Features:</b>
         <ul>
             <li><b>JSON Formatter</b> - Beautify, compress, validate JSON with syntax highlighting and error detection</li>
-            <li><b>Byte Decoder</b> - Convert between hexadecimal, binary, and decimal with bit-level visualization</li>
+            <li><b>Base Decoder</b> - Convert between hexadecimal, binary, and decimal with bit-level visualization</li>
             <li><b>Byte Parser</b> - Parse byte data by offset and length, supporting multiple data types (Int8/16/32/64, Float, Double, String) with endianness support</li>
         </ul>
         <br>
-        开发者工具箱插件，包含：JSON 格式化工具（美化、压缩、语法校验）、字节解码器（进制转换、位可视化）、字节解析器（自定义规则解析）
+        开发者工具箱插件，包含：JSON 格式化工具（美化、压缩、语法校验）、进制解码器（十六进制/二进制/十进制转换、位可视化）、字节解析器（自定义规则解析）
     ]]></description>
 
     <depends>com.intellij.java</depends>

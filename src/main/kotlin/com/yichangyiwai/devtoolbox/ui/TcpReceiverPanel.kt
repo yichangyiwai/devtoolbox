@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -67,6 +68,13 @@ fun TcpReceiverPanel() {
         } else {
             ByteParseService.parseAll(bytes, parseRules, byteOrder)
         }
+    }
+
+    fun createNextParseRule(): ParseRule {
+        val previousRule = parseRules.lastOrNull() ?: return ParseRule()
+        return ParseRule(
+            offset = previousRule.offset.coerceAtLeast(0) + previousRule.length.coerceAtLeast(1)
+        )
     }
 
     fun handleIncomingMessage(message: TcpReceivedMessage) {
@@ -295,7 +303,7 @@ fun TcpReceiverPanel() {
                         horizontalArrangement = Arrangement.Center
                     ) {
                         DefaultButton(modifier = Modifier.width(addRuleButtonWidth), onClick = {
-                            parseRules = parseRules + ParseRule()
+                            parseRules = parseRules + createNextParseRule()
                             errorMessage = null
                             successMessage = null
                             refreshResults()
@@ -413,6 +421,7 @@ private fun ReceiverInlineField(value: String, onValueChange: (String) -> Unit, 
             value = value,
             onValueChange = onValueChange,
             textStyle = TextStyle(color = Color(0xFFA9B7C6), fontSize = 12.sp, fontFamily = FontFamily.Monospace),
+            cursorBrush = SolidColor(Color.White),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )

@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -103,22 +104,33 @@ fun TcpSenderPanel() {
                 placeholder = "输入完整十六进制报文"
             )
         } else {
-            RuleFieldList(
-                fields = fields,
-                onUpdate = { index, field ->
-                    fields = fields.toMutableList().apply { this[index] = field }
-                    previewBytes = null
-                },
-                onDelete = { index ->
-                    if (fields.size > 1) {
-                        fields = fields.toMutableList().apply { removeAt(index) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RuleFieldList(
+                    fields = fields,
+                    onUpdate = { index, field ->
+                        fields = fields.toMutableList().apply { this[index] = field }
                         previewBytes = null
+                    },
+                    onDelete = { index ->
+                        if (fields.size > 1) {
+                            fields = fields.toMutableList().apply { removeAt(index) }
+                            previewBytes = null
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    DefaultButton(onClick = { fields = fields + TcpMessageField(offset = fields.maxOf { it.offset + it.length }) }) {
+                        Text("+ 添加字段")
                     }
-                }
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DefaultButton(onClick = { fields = fields + TcpMessageField(offset = fields.maxOf { it.offset + it.length }) }) {
-                    Text("+ 添加字段")
                 }
             }
         }
@@ -231,8 +243,9 @@ private fun RuleFieldList(
     fields: List<TcpMessageField>,
     onUpdate: (Int, TcpMessageField) -> Unit,
     onDelete: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         fields.forEachIndexed { index, field ->
             Column(
                 modifier = Modifier
@@ -325,6 +338,7 @@ private fun InlineTextField(value: String, onValueChange: (String) -> Unit, modi
             value = value,
             onValueChange = onValueChange,
             textStyle = TextStyle(color = Color(0xFFA9B7C6), fontSize = 12.sp, fontFamily = FontFamily.Monospace),
+            cursorBrush = SolidColor(Color.White),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )

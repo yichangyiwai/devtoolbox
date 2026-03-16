@@ -11,11 +11,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yichangyiwai.devtoolbox.ui.components.ErrorMessage
+import com.yichangyiwai.devtoolbox.ui.components.SuccessMessage
 import org.jetbrains.jewel.ui.component.*
 
 @Composable
@@ -23,6 +26,7 @@ fun ByteDecoderPanel() {
     var inputText by remember { mutableStateOf("") }
     var inputType by remember { mutableStateOf(InputType.HEX) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
     var conversionResult by remember { mutableStateOf<ConversionResult?>(null) }
 
     Column(
@@ -50,6 +54,7 @@ fun ByteDecoderPanel() {
                             inputText = ""
                             conversionResult = null
                             errorMessage = null
+                            successMessage = null
                         }
                     ) {
                         Text(type.displayName)
@@ -64,8 +69,10 @@ fun ByteDecoderPanel() {
                 if (result.isSuccess) {
                     conversionResult = result.getOrNull()
                     errorMessage = null
+                    successMessage = "转换完成"
                 } else {
                     errorMessage = result.exceptionOrNull()?.message
+                    successMessage = null
                     conversionResult = null
                 }
             }) { Text("转换") }
@@ -74,6 +81,7 @@ fun ByteDecoderPanel() {
                 inputText = ""
                 conversionResult = null
                 errorMessage = null
+                successMessage = null
             }) { Text("清空") }
         }
 
@@ -91,15 +99,11 @@ fun ByteDecoderPanel() {
 
         // 错误提示
         errorMessage?.let { error ->
-            Text(
-                text = "❌ $error",
-                color = Color(0xFFE53935),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0x20E53935), RoundedCornerShape(4.dp))
-                    .padding(8.dp)
-            )
+            ErrorMessage(error)
+        }
+
+        successMessage?.let { message ->
+            SuccessMessage(message)
         }
 
         // 转换结果
@@ -150,6 +154,7 @@ private fun InputTextField(
                 fontSize = 13.sp,
                 fontFamily = FontFamily.Monospace
             ),
+            cursorBrush = SolidColor(Color.White),
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -186,10 +191,12 @@ private fun BitVisualization(bits: List<Int>) {
         Spacer(Modifier.height(8.dp))
 
         // 按字节分组显示
-        bits.chunked(8).forEachIndexed { byteIndex, byteBits ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                bits.chunked(8).forEachIndexed { byteIndex, byteBits ->
+                    val bitStart = (bits.size - 1) - (byteIndex * 8)
+                    val bitEnd = (bitStart - 7).coerceAtLeast(0)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 Text(
@@ -222,7 +229,7 @@ private fun BitVisualization(bits: List<Int>) {
 
                 // 位索引标注
                 Text(
-                    "[${7 - 0}..${7 - 7}]",
+                    "[$bitStart..$bitEnd]",
                     fontSize = 9.sp,
                     color = Color.Gray.copy(alpha = 0.6f)
                 )
@@ -246,7 +253,7 @@ private fun BitVisualization(bits: List<Int>) {
 }
 
 private enum class InputType(val displayName: String, val placeholder: String) {
-    HEX("十六进制", "例如: 0xFF 或 FF 或 255"),
+    HEX("十六进制", "例如: 0xFF 或 FF"),
     BINARY("二进制", "例如: 11111111 或 0b11111111"),
     DECIMAL("十进制", "例如: 255")
 }

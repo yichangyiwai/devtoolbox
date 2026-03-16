@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ fun HexInputField(
                 fontSize = 13.sp,
                 fontFamily = FontFamily.Monospace
             ),
+            cursorBrush = SolidColor(Color.White),
             modifier = Modifier.fillMaxSize(),
             readOnly = readOnly
         )

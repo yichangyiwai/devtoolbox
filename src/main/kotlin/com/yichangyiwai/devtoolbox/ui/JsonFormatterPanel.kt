@@ -12,12 +12,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.*
+import com.yichangyiwai.devtoolbox.ui.components.ErrorMessage
+import com.yichangyiwai.devtoolbox.ui.components.SuccessMessage
 import org.jetbrains.jewel.ui.component.*
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
@@ -27,6 +30,7 @@ fun JsonFormatterPanel() {
     var inputText by remember { mutableStateOf("") }
     var outputText by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var successMessage by remember { mutableStateOf<String?>(null) }
     var indentSize by remember { mutableStateOf(2) }
     var parsedJson by remember { mutableStateOf<JsonElement?>(null) }
     var showTreeView by remember { mutableStateOf(true) }
@@ -44,6 +48,7 @@ fun JsonFormatterPanel() {
                 val result = formatJson(inputText, indentSize)
                 outputText = result.first
                 errorMessage = result.second
+                successMessage = null
                 parsedJson = if (result.second == null) {
                     try { JsonParser.parseString(inputText) } catch (e: Exception) { null }
                 } else null
@@ -53,19 +58,28 @@ fun JsonFormatterPanel() {
                 val result = compressJson(inputText)
                 outputText = result.first
                 errorMessage = result.second
+                successMessage = null
                 parsedJson = null
             }) { Text("压缩") }
 
             DefaultButton(onClick = {
                 val result = validateJson(inputText)
                 errorMessage = result
+                successMessage = if (result == null) "JSON 格式正确" else null
+                parsedJson = if (result == null) {
+                    try { JsonParser.parseString(inputText) } catch (e: Exception) { null }
+                } else null
                 if (result == null) {
-                    outputText = "✓ JSON 格式正确"
+                    outputText = "JSON 格式正确"
                 }
             }) { Text("校验") }
 
             DefaultButton(onClick = {
-                copyToClipboard(outputText)
+                if (outputText.isNotBlank()) {
+                    copyToClipboard(outputText)
+                    successMessage = "结果已复制到剪贴板"
+                    errorMessage = null
+                }
             }) { Text("复制结果") }
 
             Spacer(Modifier.weight(1f))
@@ -100,17 +114,13 @@ fun JsonFormatterPanel() {
             }
         }
 
-        // 错误提示
+        // 状态提示
+        successMessage?.let { message ->
+            SuccessMessage(message)
+        }
+
         errorMessage?.let { error ->
-            Text(
-                text = "❌ $error",
-                color = Color(0xFFE53935),
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0x20E53935), RoundedCornerShape(4.dp))
-                    .padding(8.dp)
-            )
+            ErrorMessage(error)
         }
 
         // 输入输出区域
@@ -171,6 +181,7 @@ private fun JsonTextArea(
                 fontSize = 13.sp,
                 fontFamily = FontFamily.Monospace
             ),
+            cursorBrush = SolidColor(Color.White),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp)
