@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2026-03-16
+
+### Added
+
+- **工具窗口体验**
+  - 新增“放大查看”操作，可将当前工具页签切换到独立窗口中使用
+
+### Changed
+
+- **工具导航与命名**
+  - 工具窗口页签命名调整为“进制解码器”“TCP 接收与解析”，提升工具辨识度
+
+- **JSON 格式化 / 进制解码器**
+  - 增加成功与错误状态提示，便于确认校验、转换与复制结果
+  - 优化文本输入光标显示，提升深色主题下的编辑可见性
+
+- **TCP 工具体验**
+  - TCP 发送规则列表支持滚动编辑，新增字段时自动衔接上一字段偏移
+  - TCP 接收解析新增规则时会默认续接上一条规则的结束位置，减少手工录入
+
 ## [1.2.5] - 2026-03-16
 
 ### Added

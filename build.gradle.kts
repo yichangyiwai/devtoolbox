@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.yichangyiwai"
-version = "1.2.5"
+version = "1.2.6"
 
 repositories {
     mavenCentral()
@@ -37,10 +37,11 @@ intellijPlatform {
         }
 
         changeNotes = """
-            <h3>v1.2.5</h3>
+            <h3>v1.2.6</h3>
             <ul>
-                <li>TCP 接收器新增服务端监听 / 客户端连接双模式支持</li>
-                <li>Ping 发送、连接状态与主机端口输入会随接收模式联动切换</li>
+                <li>工具窗口新增独立窗口放大查看入口，并统一调整部分工具页签命名</li>
+                <li>JSON 格式化与进制解码器补充成功/错误状态反馈，并优化输入光标显示</li>
+                <li>TCP 报文发送与解析规则编辑体验优化，新增规则时可自动衔接偏移</li>
             </ul>
         """.trimIndent()
     }
